@@ -17,23 +17,23 @@ namespace Mistaken.DisconnectKiller
         public override string Author => "Mistaken Devs";
 
         /// <inheritdoc/>
-        public override string Name => "";
+        public override string Name => "DisconnectKiller";
 
         /// <inheritdoc/>
-        public override string Prefix => "M";
+        public override string Prefix => "MDisconnectKiller";
 
         /// <inheritdoc/>
-        public override PluginPriority Priority => PluginPriority.Higher;
+        public override PluginPriority Priority => PluginPriority.Default;
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion => new Version(2, 11, 0);
+        public override Version RequiredExiledVersion => new Version(3, 2, 1);
 
         /// <inheritdoc/>
         public override void OnEnabled()
         {
             Instance = this;
 
-            // new Handler(this);
+            new KillPlayerHandler(this);
 
             API.Diagnostics.Module.OnEnable(this);
 

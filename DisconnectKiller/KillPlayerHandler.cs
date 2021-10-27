@@ -1,28 +1,26 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="RespawnPlayerHandler.cs" company="Mistaken">
+// <copyright file="KillPlayer.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Reflection;
 using Exiled.API.Features;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
 using Mistaken.RoundLogger;
-using UnityEngine;
 
 namespace Mistaken.DisconnectKiller
 {
-    internal class RespawnPlayerHandler : API.Diagnostics.Module
+    internal class KillPlayerHandler : API.Diagnostics.Module
     {
-        public RespawnPlayerHandler(PluginHandler p)
+        public KillPlayerHandler(PluginHandler p)
             : base(p)
         {
         }
 
-        public override string Name => "RespawnPlayer";
+        public override string Name => "KillPlayer";
 
         public override void OnEnable()
         {
@@ -33,7 +31,6 @@ namespace Mistaken.DisconnectKiller
         {
             Exiled.Events.Handlers.Player.Left -= this.Handle<Exiled.Events.EventArgs.LeftEventArgs>((ev) => this.Player_Left(ev));
         }
-
 
         private static void RespawnPlayer(Player currentPlayer)
         {

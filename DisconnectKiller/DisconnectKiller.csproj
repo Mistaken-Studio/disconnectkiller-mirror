@@ -57,7 +57,7 @@
     <Compile Include="PluginHandler.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RespawnPlayerHandler.cs" />
+    <Compile Include="KillPlayerHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
