@@ -24,12 +24,12 @@ namespace Mistaken.DisconnectKiller
 
         public override void OnEnable()
         {
-            Exiled.Events.Handlers.Player.Left += this.Handle<Exiled.Events.EventArgs.LeftEventArgs>((ev) => this.Player_Left(ev));
+            Exiled.Events.Handlers.Player.Left += this.Player_Left;
         }
 
         public override void OnDisable()
         {
-            Exiled.Events.Handlers.Player.Left -= this.Handle<Exiled.Events.EventArgs.LeftEventArgs>((ev) => this.Player_Left(ev));
+            Exiled.Events.Handlers.Player.Left -= this.Player_Left;
         }
 
         private static void RespawnPlayer(Player currentPlayer)
