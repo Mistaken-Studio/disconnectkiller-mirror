@@ -66,7 +66,7 @@ namespace Mistaken.DisconnectKiller
         {
             Exiled.API.Features.Log.Debug(Assembly.GetAssembly(typeof(BetterSCP.PluginHandler)).FullName, PluginHandler.Instance.Config.VerbouseOutput);
             RLogger.Log("DISCONNECT KILLER", "SCP", "Killing SCP");
-            currentSCP.Kill("Heart Attack");
+            currentSCP.Kill("Corroded by a highy corrosive substance", $"SUCCESSFULLY TERMINATED. TERMINATION CAUSE UNSPECIFIED.");
         }
 
         private void Player_Left(Exiled.Events.EventArgs.LeftEventArgs ev)
