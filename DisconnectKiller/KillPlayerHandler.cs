@@ -40,7 +40,7 @@ namespace Mistaken.DisconnectKiller
             if (currentPlayer.IsDead)
                 return;
 
-            if (currentPlayer.IsScp && currentPlayer.Role != RoleType.Scp0492)
+           /* if (currentPlayer.IsScp && currentPlayer.Role != RoleType.Scp0492)
             {
                 try
                 {
@@ -56,7 +56,7 @@ namespace Mistaken.DisconnectKiller
                     Exiled.API.Features.Log.Error(ex);
                     return;
                 }
-            }
+            }*/
 
             currentPlayer.Kill("Heart Attack");
             RLogger.Log("DISCONNECT KILLER", "HUMAN", "Killing human");

@@ -23,7 +23,7 @@ namespace Mistaken.DisconnectKiller
         public override string Prefix => "MDisconnectKiller";
 
         /// <inheritdoc/>
-        public override PluginPriority Priority => PluginPriority.Default;
+        public override PluginPriority Priority => PluginPriority.Low;
 
         /// <inheritdoc/>
         public override Version RequiredExiledVersion => new Version(4, 1, 2);
