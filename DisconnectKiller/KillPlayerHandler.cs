@@ -5,11 +5,15 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Reflection;
+using Exiled.API.Enums;
 using Exiled.API.Features;
+using Mistaken.API;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
 using Mistaken.RoundLogger;
+using UnityEngine;
 
 namespace Mistaken.DisconnectKiller
 {
@@ -18,6 +22,7 @@ namespace Mistaken.DisconnectKiller
         public KillPlayerHandler(PluginHandler p)
             : base(p)
         {
+            Instance = this;
         }
 
         public override string Name => "KillPlayer";
@@ -32,7 +37,63 @@ namespace Mistaken.DisconnectKiller
             Exiled.Events.Handlers.Player.Left -= this.Player_Left;
         }
 
-        private static void RespawnPlayer(Player currentPlayer)
+        internal static KillPlayerHandler Instance { get; private set; }
+
+        internal void RespawnSCP(Player player)
+        {
+            RLogger.Log("SCP RESPAWN", "SCP", $"Respawning SCP, Current: {player.PlayerToString()}");
+
+            var spectators = RealPlayers.Get(Team.RIP).Where(x => !x.IsOverwatchEnabled).ToArray();
+
+            if (spectators.Length == 0)
+            {
+                player.IsGodModeEnabled = false;
+                MapPlus.Broadcast("RESPAWN", 10, $"SCP player Change, ({player.Id}) {player.Nickname} -> Nobody", Broadcast.BroadcastFlags.AdminChat);
+                player.Kill("Unknown cause of death", "TERMINATED SUCCESSFULLY");
+            }
+            else
+            {
+                var randomPlayer = spectators[UnityEngine.Random.Range(0, spectators.Length)];
+
+                var position = player.Position + (Vector3.up * 0.5f);
+                var hp = player.Health;
+                var ahp = player.ArtificialHealth;
+                var lvl = player.Level;
+                var energy = player.Energy;
+                var experience = player.Experience;
+                Camera079 camera = player.Camera;
+
+                bool scp079 = player.Role == RoleType.Scp079;
+                randomPlayer.SetRole(player.Role, SpawnReason.ForceClass, false);
+                this.CallDelayed(
+                    .2f,
+                    () =>
+                    {
+                        if (scp079)
+                        {
+                            randomPlayer.Level = lvl;
+                            randomPlayer.Energy = energy;
+                            randomPlayer.Experience = experience;
+                            if (player.Camera != null)
+                                randomPlayer.Camera = player.Camera;
+                        }
+                        else
+                        {
+                            randomPlayer.Health = hp;
+                            randomPlayer.ArtificialHealth = ahp;
+                        }
+                    },
+                    "KillPlayerHandler.LateSync");
+
+                this.CallDelayed(.5f, () => randomPlayer.Position = position, "KillPlayerHandler.LateTeleport");
+
+                player.SetRole(RoleType.Spectator, SpawnReason.None);
+                randomPlayer.Broadcast(10, $"Player {player.GetDisplayName()} left game so you were moved to replace him");
+                MapPlus.Broadcast("RESPAWN", 10, $"SCP player Change, ({player.Id}) {player.Nickname} -> ({randomPlayer.Id}) {randomPlayer.Nickname}", Broadcast.BroadcastFlags.AdminChat);
+            }
+        }
+
+        private void RespawnPlayer(Player currentPlayer)
         {
             if (!currentPlayer.IsReadyPlayer())
                 return;
@@ -40,39 +101,21 @@ namespace Mistaken.DisconnectKiller
             if (currentPlayer.IsDead)
                 return;
 
-           /* if (currentPlayer.IsScp && currentPlayer.Role != RoleType.Scp0492)
+            if (currentPlayer.IsScp && currentPlayer.Role != RoleType.Scp0492)
             {
-                try
-                {
-                    RespawnSCP(currentPlayer);
-                    return;
-                }
-                catch (TypeLoadException)
-                {
-                    Exiled.API.Features.Log.Debug("BetterSCP not found", PluginHandler.Instance.Config.VerbouseOutput);
-                }
-                catch (Exception ex)
-                {
-                    Exiled.API.Features.Log.Error(ex);
-                    return;
-                }
-            }*/
-
-            currentPlayer.Kill("Heart Attack");
-            RLogger.Log("DISCONNECT KILLER", "HUMAN", "Killing human");
-        }
-
-        private static void RespawnSCP(Player currentSCP)
-        {
-            Exiled.API.Features.Log.Debug(Assembly.GetAssembly(typeof(BetterSCP.PluginHandler)).FullName, PluginHandler.Instance.Config.VerbouseOutput);
-            RLogger.Log("DISCONNECT KILLER", "SCP", "Killing SCP");
-            currentSCP.Kill("Corroded by a highy corrosive substance", $"SUCCESSFULLY TERMINATED. TERMINATION CAUSE UNSPECIFIED.");
+                this.RespawnSCP(currentPlayer);
+            }
+            else
+            {
+                currentPlayer.Kill("Heart Attack");
+                RLogger.Log("DISCONNECT KILLER", "HUMAN", $"Killing human {currentPlayer.PlayerToString()}");
+            }
         }
 
         private void Player_Left(Exiled.Events.EventArgs.LeftEventArgs ev)
         {
             if (Round.IsStarted)
-                RespawnPlayer(ev.Player);
+                this.RespawnPlayer(ev.Player);
         }
     }
 }
