@@ -30,11 +30,13 @@ namespace Mistaken.DisconnectKiller
         public override void OnEnable()
         {
             Exiled.Events.Handlers.Player.Left += this.Player_Left;
+            Exiled.Events.Handlers.Scp106.Containing += this.Scp106_Containing;
         }
 
         public override void OnDisable()
         {
             Exiled.Events.Handlers.Player.Left -= this.Player_Left;
+            Exiled.Events.Handlers.Scp106.Containing -= this.Scp106_Containing;
         }
 
         internal static KillPlayerHandler Instance { get; private set; }
@@ -93,12 +95,17 @@ namespace Mistaken.DisconnectKiller
             }
         }
 
+        private bool scp106contained = false;
+
         private void RespawnPlayer(Player currentPlayer)
         {
             if (!currentPlayer.IsReadyPlayer())
                 return;
 
             if (currentPlayer.IsDead)
+                return;
+
+            if (currentPlayer.Role == RoleType.Scp106 && this.scp106contained)
                 return;
 
             if (currentPlayer.IsScp && currentPlayer.Role != RoleType.Scp0492)
@@ -116,6 +123,11 @@ namespace Mistaken.DisconnectKiller
         {
             if (Round.IsStarted)
                 this.RespawnPlayer(ev.Player);
+        }
+
+        private void Scp106_Containing(Exiled.Events.EventArgs.ContainingEventArgs ev)
+        {
+            this.scp106contained = true;
         }
     }
 }
