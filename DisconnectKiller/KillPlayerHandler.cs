@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.API.Features.Roles;
 using Mistaken.API;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
@@ -60,10 +61,11 @@ namespace Mistaken.DisconnectKiller
                 var position = player.Position + (Vector3.up * 0.5f);
                 var hp = player.Health;
                 var ahp = player.ArtificialHealth;
-                var lvl = player.Level;
-                var energy = player.Energy;
-                var experience = player.Experience;
-                Camera079 camera = player.Camera;
+                var scp = (Scp079Role)player.Role;
+                var lvl = scp.Level;
+                var energy = scp.Energy;
+                var experience = scp.Experience;
+                Exiled.API.Features.Camera camera = scp.Camera; // to może nie działać
 
                 bool scp079 = player.Role == RoleType.Scp079;
                 randomPlayer.SetRole(player.Role, SpawnReason.ForceClass, false);
@@ -73,11 +75,12 @@ namespace Mistaken.DisconnectKiller
                     {
                         if (scp079)
                         {
-                            randomPlayer.Level = lvl;
-                            randomPlayer.Energy = energy;
-                            randomPlayer.Experience = experience;
-                            if (player.Camera != null)
-                                randomPlayer.Camera = player.Camera;
+                            var rscp = (Scp079Role)player.Role;
+                            rscp.Level = lvl;
+                            rscp.Energy = energy;
+                            rscp.Experience = experience;
+                            if (camera != null)
+                                rscp.Camera = camera;
                         }
                         else
                         {
