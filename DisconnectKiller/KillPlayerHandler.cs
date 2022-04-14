@@ -61,36 +61,33 @@ namespace Mistaken.DisconnectKiller
                 var position = player.Position + (Vector3.up * 0.5f);
                 var hp = player.Health;
                 var ahp = player.ArtificialHealth;
-                var scp = (Scp079Role)player.Role;
-                var lvl = scp.Level;
-                var energy = scp.Energy;
-                var experience = scp.Experience;
-                Exiled.API.Features.Camera camera = scp.Camera; // to może nie działać
-
-                bool scp079 = player.Role == RoleType.Scp079;
+                Scp079Role scp079role = null;
+                if (player.Role.Type == RoleType.Scp079)
+                    scp079role = (Scp079Role)player.Role;
                 randomPlayer.SetRole(player.Role, SpawnReason.ForceClass, false);
                 this.CallDelayed(
                     .2f,
                     () =>
                     {
-                        if (scp079)
-                        {
-                            var rscp = (Scp079Role)player.Role;
-                            rscp.Level = lvl;
-                            rscp.Energy = energy;
-                            rscp.Experience = experience;
-                            if (camera != null)
-                                rscp.Camera = camera;
-                        }
-                        else
+                        if (scp079role is null)
                         {
                             randomPlayer.Health = hp;
                             randomPlayer.ArtificialHealth = ahp;
                         }
+                        else
+                        {
+                            var rscp = (Scp079Role)randomPlayer.Role;
+                            rscp.Level = scp079role.Level;
+                            rscp.Energy = scp079role.Energy;
+                            rscp.Experience = scp079role.Experience;
+                            if (!(scp079role.Camera is null))
+                                rscp.SetCamera(scp079role.Camera);
+                        }
                     },
                     "KillPlayerHandler.LateSync");
 
-                this.CallDelayed(.5f, () => randomPlayer.Position = position, "KillPlayerHandler.LateTeleport");
+                if (scp079role is null)
+                    this.CallDelayed(.5f, () => randomPlayer.Position = position, "KillPlayerHandler.LateTeleport");
 
                 player.SetRole(RoleType.Spectator, SpawnReason.None);
                 randomPlayer.Broadcast(10, $"Player {player.GetDisplayName()} left game so you were moved to replace him");
