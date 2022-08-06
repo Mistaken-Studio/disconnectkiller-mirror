@@ -62,11 +62,10 @@ namespace Mistaken.DisconnectKiller
                 var hp = player.Health;
                 var ahp = player.ArtificialHealth;
                 Scp079Role scp079role = null;
-                if (player.Role.Type == RoleType.Scp079)
-                    scp079role = (Scp079Role)player.Role;
+                player.Role.Is<Scp079Role>(out scp079role);
                 randomPlayer.SetRole(player.Role, SpawnReason.ForceClass, false);
                 this.CallDelayed(
-                    .2f,
+                    .5f,
                     () =>
                     {
                         if (scp079role is null)
@@ -76,8 +75,9 @@ namespace Mistaken.DisconnectKiller
                         }
                         else
                         {
-                            var rscp = (Scp079Role)randomPlayer.Role;
+                            var rscp = randomPlayer.Role.As<Scp079Role>();
                             rscp.Level = scp079role.Level;
+                            rscp.MaxEnergy = scp079role.MaxEnergy;
                             rscp.Energy = scp079role.Energy;
                             rscp.Experience = scp079role.Experience;
                             if (!(scp079role.Camera is null))
