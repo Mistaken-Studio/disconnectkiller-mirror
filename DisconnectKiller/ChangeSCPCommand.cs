@@ -5,13 +5,13 @@
 // -----------------------------------------------------------------------
 
 using CommandSystem;
+using Exiled.API.Features;
 using Mistaken.API.Commands;
-using Mistaken.API.Extensions;
 
 namespace Mistaken.DisconnectKiller
 {
-    [CommandSystem.CommandHandler(typeof(CommandSystem.RemoteAdminCommandHandler))]
-    internal class ChangeSCPCommand : IBetterCommand, IPermissionLocked
+    [CommandHandler(typeof(RemoteAdminCommandHandler))]
+    internal sealed class ChangeSCPCommand : IBetterCommand, IPermissionLocked
     {
         public string Permission => "changeSCP";
 
@@ -24,12 +24,12 @@ namespace Mistaken.DisconnectKiller
         public override string[] Execute(ICommandSender sender, string[] args, out bool success)
         {
             success = false;
-            var player = sender.GetPlayer();
+            var player = Player.Get(sender);
             if (!player.IsScp)
                 return new string[] { "This command is only avaiable for SCPs" };
 
-            success = true;
             KillPlayerHandler.Instance.RespawnSCP(player);
+            success = true;
             return new string[] { "Done" };
         }
     }

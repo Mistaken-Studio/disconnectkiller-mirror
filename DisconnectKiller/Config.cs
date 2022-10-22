@@ -5,24 +5,15 @@
 // -----------------------------------------------------------------------
 
 using System.ComponentModel;
-using Mistaken.Updater.Config;
+using Exiled.API.Interfaces;
 
 namespace Mistaken.DisconnectKiller
 {
-    /// <inheritdoc/>
-    public class Config : IAutoUpdatableConfig
+    internal sealed class Config : IConfig
     {
-        /// <inheritdoc/>
         public bool IsEnabled { get; set; } = true;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether debug should be displayed.
-        /// </summary>
         [Description("If true then debug will be displayed")]
         public bool VerbouseOutput { get; set; }
-
-        /// <inheritdoc/>
-        [Description("Auto Update Settings")]
-        public System.Collections.Generic.Dictionary<string, string> AutoUpdateConfig { get; set; }
     }
 }
