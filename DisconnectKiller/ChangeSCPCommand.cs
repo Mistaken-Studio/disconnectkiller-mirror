@@ -10,7 +10,7 @@ using Mistaken.API.Commands;
 
 namespace Mistaken.DisconnectKiller
 {
-    [CommandHandler(typeof(RemoteAdminCommandHandler))]
+    // [CommandHandler(typeof(RemoteAdminCommandHandler))]
     internal sealed class ChangeSCPCommand : IBetterCommand, IPermissionLocked
     {
         public string Permission => "changeSCP";
@@ -25,6 +25,7 @@ namespace Mistaken.DisconnectKiller
         {
             success = false;
             var player = Player.Get(sender);
+
             if (!player.IsScp)
                 return new string[] { "This command is only avaiable for SCPs" };
 
